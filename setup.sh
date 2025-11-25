@@ -21,7 +21,6 @@ if ! command -v git &> /dev/null; then
 fi
 
 # 2. Verifica se o módulo venv do Python 3 está instalado
-# No Linux Mint/Ubuntu, o python3 vem instalado, mas o módulo venv (python3-venv) muitas vezes é separado.
 if ! dpkg -s python3-venv &> /dev/null; then
     echo -e "${VERMELHO}ERRO: O pacote python3-venv não está instalado.${SEM_COR}"
     echo "O sistema precisa deste pacote para criar ambientes virtuais."
@@ -35,18 +34,28 @@ fi
 DIR_NAME=$(basename "$REPO_URL" .git)
 
 if [ -d "$DIR_NAME" ]; then
-    echo -e "${AMARELO}O diretório '$DIR_NAME' já existe. Pulando etapa de clonagem.${SEM_COR}"
+    echo -e "${AMARELO}O diretório '$DIR_NAME' já existe.${SEM_COR}"
+    echo "Atualizando repositório (git pull)..."
+    
+    # Usa o git -C para executar o pull dentro do diretório sem precisar dar cd agora
+    if git -C "$DIR_NAME" pull; then
+        echo -e "${VERDE}Repositório atualizado com sucesso.${SEM_COR}"
+    else
+        echo -e "${AMARELO}Falha ao atualizar o repositório. Verifique conflitos locais ou conexão.${SEM_COR}"
+        echo -e "Continuando com a versão disponível localmente..."
+    fi
 else
     echo "Clonando repositório..."
     git clone "$REPO_URL"
     if [ $? -ne 0 ]; then
-        echo -e "${VERMELHO}Falha ao clonar o repositório. Verifique a URL.${SEM_COR}"
+        echo -e "${VERMELHO}Falha ao clonar o repositório. Verifique a conexão com a internet.${SEM_COR}"
         exit 1
     fi
 fi
 
-# 4. Entra no diretório clonado
+# 4. Entra no diretório clonado/existente
 cd "$DIR_NAME" || { echo -e "${VERMELHO}Falha ao entrar no diretório.${SEM_COR}"; exit 1; }
+echo "Diretório de trabalho: $(pwd)"
 
 # 5. Cria e inicializa o ambiente venv
 if [ ! -d "venv" ]; then

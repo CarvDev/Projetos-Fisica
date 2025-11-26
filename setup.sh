@@ -35,7 +35,7 @@ source venv/bin/activate
 echo -e "${VERDE}Ambiente virtual ativado.${SEM_COR}"
 
 # 3. Verifica e Instala Dependências
-echo "${AMARELO}Instalando/verificando dependências...${SEM_COR}"
+echo -e "${AMARELO}Instalando/verificando dependências...${SEM_COR}"
 # Atualiza o pip primeiro
 pip install --upgrade pip > /dev/null 2>&1
 
@@ -49,11 +49,12 @@ for pacote in "${DEPENDENCIAS[@]}"; do
         if [ $? -eq 0 ]; then
              echo -e "  ${VERDE}[OK] $pacote instalado com sucesso.${SEM_COR}"
         else
-             echo -e "  ${VERMELHO}[ERRO] Falha ao instalar $pacote.${SEM_COR}"
+             echo -e "  ${VERMELHO}[ERRO] Falha ao instalar $pacote. Por favor, verifique sua conexão com a internet.${SEM_COR}"
              exit 1
         fi
     fi
 done
+echo -e "${VERDE}Todas as dependências estão OK${SEM_COR}"
    
 # 4. Inicia o Jupyter Notebook
 echo -e "${VERDE}Iniciando Jupyter Notebook...${SEM_COR}"
